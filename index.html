@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Design Cursus — Mission Control</title>
+<style>
+  :root {
+    --bg: #0f0e0c;
+    --bg-surface: #1a1816;
+    --bg-card: #141210;
+    --text: #f5f0e6;
+    --text-dim: #a39a8c;
+    --accent: #d4af37;
+    --accent-bright: #e8c659;
+    --accent-dim: #8b7428;
+    --burgundy: #8b1538;
+    --green: #7fc87a;
+    --orange: #e89750;
+    --border: #2a2622;
+    --border-bright: #3d3831;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    padding: 0;
+  }
+
+  .container { max-width: 1400px; margin: 0 auto; padding: 2rem 3rem; }
+  @media (max-width: 768px) { .container { padding: 1rem 1.25rem; } }
+
+  header.hero {
+    padding: 4rem 3rem 3rem;
+    background: linear-gradient(135deg, rgba(139, 21, 56, 0.15), rgba(212, 175, 55, 0.04));
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    margin-bottom: 3rem;
+    position: relative;
+  }
+  header.hero .eyebrow {
+    color: var(--accent);
+    font-size: 0.8rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+  header.hero h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    line-height: 1.05;
+    margin-bottom: 1rem;
+  }
+  header.hero p {
+    color: var(--text-dim);
+    font-size: 1.05rem;
+    max-width: 640px;
+    line-height: 1.6;
+  }
+  header.hero .meta-row {
+    display: flex;
+    gap: 2.5rem;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  header.hero .meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+  }
+  header.hero .meta strong {
+    display: block;
+    color: var(--accent);
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 0.2rem;
+    line-height: 1;
+  }
+  header.hero .meta .label {
+    color: var(--text-dim);
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .section-head {
+    margin: 4rem 0 1.5rem;
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+  }
+  .section-head h2 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 1.8rem;
+  }
+  .section-head .count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--accent-dim);
+  }
+
+  .grid-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 1.5rem 1.5rem 1.25rem;
+    text-decoration: none;
+    color: var(--text);
+    display: block;
+    transition: all 0.2s ease;
+    border-radius: 2px;
+    position: relative;
+  }
+  .card:hover {
+    border-color: var(--accent-dim);
+    background: var(--bg-surface);
+    transform: translateY(-2px);
+  }
+  .card .icon {
+    font-size: 1.4rem;
+    margin-bottom: 0.75rem;
+    display: block;
+  }
+  .card .title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 0.35rem;
+    color: var(--accent);
+  }
+  .card .desc {
+    color: var(--text-dim);
+    font-size: 0.88rem;
+    line-height: 1.5;
+    margin-bottom: 0.75rem;
+  }
+  .card .path {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent-dim);
+    letter-spacing: 0.02em;
+    word-break: break-all;
+  }
+  .card.critical {
+    border-left: 3px solid var(--burgundy);
+  }
+  .card.critical:hover { border-color: var(--burgundy); }
+  .card.primary {
+    border-left: 3px solid var(--accent);
+  }
+
+  /* Asset preview grid */
+  .asset-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 0.75rem;
+  }
+  .asset-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    transition: all 0.2s ease;
+    display: block;
+    text-decoration: none;
+    color: var(--text);
+  }
+  .asset-card:hover {
+    border-color: var(--accent-dim);
+    transform: scale(1.01);
+  }
+  .asset-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    display: block;
+    background: var(--bg-surface);
+  }
+  .asset-card .info {
+    padding: 0.75rem 1rem;
+  }
+  .asset-card .name {
+    font-size: 0.9rem;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 0.2rem;
+  }
+  .asset-card .meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+  }
+
+  .checklist {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 1.5rem 2rem;
+    border-left: 3px solid var(--green);
+  }
+  .checklist h3 {
+    color: var(--green);
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+  .checklist ul {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 0.4rem 2rem;
+  }
+  .checklist ul li {
+    padding: 0.3rem 0 0.3rem 1.5rem;
+    position: relative;
+    font-size: 0.88rem;
+    color: var(--text-dim);
+  }
+  .checklist ul li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: var(--green);
+    font-weight: 700;
+  }
+
+  .tip {
+    background: rgba(212, 175, 55, 0.06);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-left: 3px solid var(--accent);
+    padding: 1rem 1.5rem;
+    margin: 2rem 0;
+    font-size: 0.9rem;
+    color: var(--text);
+  }
+  .tip .tip-label {
+    color: var(--accent);
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+  }
+
+  footer {
+    margin-top: 5rem;
+    padding: 2rem 0;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+
+  @media (max-width: 768px) {
+    header.hero { padding: 2.5rem 1.5rem; }
+    .grid-cards { grid-template-columns: 1fr; }
+    .asset-grid { grid-template-columns: repeat(2, 1fr); }
+    .asset-card img { height: 140px; }
+  }
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;1,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="container">
+
+<header class="hero">
+  <div class="eyebrow">Mission Control · Shoot-Day Tomorrow</div>
+  <h1>Claude Design Cursus</h1>
+  <p>Complete resource hub — <strong>v2 update</strong>. Cursus uitgebreid naar 7 lessen (+ nieuwe Les 5 Hero Video) met insights uit competitor-videos. Alles wat je nodig hebt voor woensdag's opname.</p>
+  <div class="meta-row">
+    <div class="meta"><strong>9</strong><span class="label">Teleprompter Scripts</span></div>
+    <div class="meta"><strong>12</strong><span class="label">Gifts (L1-L7)</span></div>
+    <div class="meta"><strong>14</strong><span class="label">AI-Generated Assets</span></div>
+    <div class="meta"><strong>6</strong><span class="label">Launch Content Pieces</span></div>
+    <div class="meta"><strong>3</strong><span class="label">Production Skills</span></div>
+    <div class="meta"><strong>~74 MIN</strong><span class="label">Total Video</span></div>
+  </div>
+</header>
+
+
+<!-- PLANNING -->
+<div class="section-head">
+  <h2>📋 Planning & Overview</h2>
+  <span class="count">4 docs</span>
+</div>
+<div class="grid-cards">
+  <a href="read-through.html" class="card primary">
+    <span class="icon">📖</span>
+    <div class="title">Read-Through</div>
+    <div class="desc">Volledige cursus content in één scroll — 8 secties met alle talking points, gifts, transities.</div>
+    <div class="path">read-through.html</div>
+  </a>
+  <a href="todo-dinsdag.html" class="card critical">
+    <span class="icon">✅</span>
+    <div class="title">Dinsdag To-do's</div>
+    <div class="desc">35 tasks met checkboxes + localStorage persistence. Dag-indeling + prioriteiten.</div>
+    <div class="path">todo-dinsdag.html</div>
+  </a>
+  <a href="pre-opname-checklist.html" class="card critical">
+    <span class="icon">🎬</span>
+    <div class="title">Pre-Opname Checklist</div>
+    <div class="desc">Print-klare A4 voor woensdagochtend. Alle systeem/studio/auth checks in één overzicht.</div>
+    <div class="path">pre-opname-checklist.html</div>
+  </a>
+  <a href="README.md" class="card">
+    <span class="icon">📁</span>
+    <div class="title">Cursus README</div>
+    <div class="desc">Opname workflow, studio prep, post-opname checklist. Reference doc.</div>
+    <div class="path">README.md</div>
+  </a>
+</div>
+
+
+<!-- TELEPROMPTER -->
+<div class="section-head">
+  <h2>📺 Teleprompter Scripts</h2>
+  <span class="count">9 files · v2 updated</span>
+</div>
+<div class="grid-cards">
+  <a href="teleprompter/00-intro.txt" class="card"><span class="icon">🎬</span><div class="title">00 — Intro</div><div class="desc">Hook + 3 proof + token economics warning + 7-lessen preview.</div><div class="path">3:30 · v2 — teleprompter/00-intro.txt</div></a>
+  <a href="teleprompter/01-design-md.txt" class="card"><span class="icon">📄</span><div class="title">01 — Design MD</div><div class="desc">3 import-methodes + Design Systems vergelijking.</div><div class="path">10:00 · v2 — teleprompter/01-design-md.txt</div></a>
+  <a href="teleprompter/02-prototype-mode.txt" class="card"><span class="icon">⚡</span><div class="title">02 — Prototype Mode</div><div class="desc">7-vragen loop + Opus 4.7 + Plan Mode + Variants→Tweaks workflow.</div><div class="path">12:00 · v2 — teleprompter/02-prototype-mode.txt</div></a>
+  <a href="teleprompter/03-multi-page.txt" class="card"><span class="icon">📐</span><div class="title">03 — Multi-Page</div><div class="desc">Dribbble methode + 5-pagina build.</div><div class="path">10:00 · teleprompter/03-multi-page.txt</div></a>
+  <a href="teleprompter/04-mobile-decks.txt" class="card"><span class="icon">📱</span><div class="title">04 — Mobile + Decks</div><div class="desc">Scent Finder Quiz + pitch deck + share→remix.</div><div class="path">10:00 · v2 — teleprompter/04-mobile-decks.txt</div></a>
+  <a href="teleprompter/05-hero-video.txt" class="card primary"><span class="icon">🎬</span><div class="title">05 — 🔥 Hero Video (NIEUW)</div><div class="desc">Nano Banana Pro → Claude Design → Seedance 2.0 → MP4 swap. Film-level klantwerk.</div><div class="path">10:00 · NIEUW — teleprompter/05-hero-video.txt</div></a>
+  <a href="teleprompter/06-live-website.txt" class="card critical"><span class="icon">🚀</span><div class="title">06 — Live Website</div><div class="desc">/build-page + /deploy-site + ZIP handoff tip.</div><div class="path">12:00 · v2 — teleprompter/06-live-website.txt</div></a>
+  <a href="teleprompter/07-command-center.txt" class="card"><span class="icon">🎯</span><div class="title">07 — Command Center</div><div class="desc">Velocity demo + agency angle + victory lap.</div><div class="path">6:00 · teleprompter/07-command-center.txt</div></a>
+  <a href="teleprompter/08-outro.txt" class="card"><span class="icon">🎭</span><div class="title">08 — Outro</div><div class="desc">Bridge naar Routines + masterclass CTA.</div><div class="path">0:30 · teleprompter/08-outro.txt</div></a>
+</div>
+
+
+<!-- DETAILED SCRIPTS (markdown versies) -->
+<div class="section-head">
+  <h2>📝 Production Scripts (MD versions)</h2>
+  <span class="count">Met shot-lists, timing markers, production notes</span>
+</div>
+<div class="grid-cards">
+  <a href="00-intro.md" class="card"><span class="icon">🎬</span><div class="title">00 — Intro</div><div class="desc">Met shot-directions voor de 3 proof-demos.</div><div class="path">00-intro.md</div></a>
+  <a href="01-design-md.md" class="card"><span class="icon">📄</span><div class="title">01 — Design MD</div><div class="desc">Met screen-cuts per import-methode.</div><div class="path">01-design-md.md</div></a>
+  <a href="02-prototype-mode.md" class="card"><span class="icon">⚡</span><div class="title">02 — Prototype Mode</div><div class="desc">Edit-modes demo timing.</div><div class="path">02-prototype-mode.md</div></a>
+  <a href="03-multi-page.md" class="card"><span class="icon">📐</span><div class="title">03 — Multi-Page</div><div class="desc">Dribbble workflow.</div><div class="path">03-multi-page.md</div></a>
+  <a href="04-mobile-decks.md" class="card"><span class="icon">📱</span><div class="title">04 — Mobile + Decks</div><div class="desc">Export demos.</div><div class="path">04-mobile-decks.md</div></a>
+  <a href="05-hero-video.md" class="card primary"><span class="icon">🎬</span><div class="title">05 — Hero Video (NIEUW)</div><div class="desc">6-beat workflow: compositie → Nano Banana → Claude Design → Seedance → swap → mobile fallback.</div><div class="path">05-hero-video.md</div></a>
+  <a href="06-live-website.md" class="card critical"><span class="icon">🚀</span><div class="title">06 — Live Website</div><div class="desc">Met ZIP handoff + backup plan references.</div><div class="path">06-live-website.md</div></a>
+  <a href="07-command-center.md" class="card"><span class="icon">🎯</span><div class="title">07 — Command Center</div><div class="desc">Case study cuts.</div><div class="path">07-command-center.md</div></a>
+  <a href="08-outro.md" class="card"><span class="icon">🎭</span><div class="title">08 — Outro</div><div class="desc">End-card spec.</div><div class="path">08-outro.md</div></a>
+</div>
+
+
+<!-- HALCYON DEMO -->
+<div class="section-head">
+  <h2>🌸 Halcyon Demo Brand</h2>
+  <span class="count">For L1–L4 demos</span>
+</div>
+<div class="asset-grid">
+  <a href="file:///Users/yellehwerker/my-ai-workspace/demos/claude-design/halcyon/refs/noord-bottle.png" class="asset-card" target="_blank">
+    <img src="file:///Users/yellehwerker/my-ai-workspace/demos/claude-design/halcyon/refs/noord-bottle.png" alt="Noord parfum">
+    <div class="info"><div class="name">Noord — Winter</div><div class="meta">2K · 1:1 · PNG</div></div>
+  </a>
+  <a href="file:///Users/yellehwerker/my-ai-workspace/demos/claude-design/halcyon/refs/spiegel-bottle.png" class="asset-card" target="_blank">
+    <img src="file:///Users/yellehwerker/my-ai-workspace/demos/claude-design/halcyon/refs/spiegel-bottle.png" alt="Spiegel parfum">
+    <div class="info"><div class="name">Spiegel — Herfst</div><div class="meta">2K · 1:1 · PNG</div></div>
+  </a>
+  <a href="file:///Users/yellehwerker/my-ai-workspace/demos/claude-design/halcyon/refs/goudenregen-bottle.png" class="asset-card" target="_blank">
+    <img src="file:///Users/yellehwerker/my-ai-workspace/demos/claude-design/halcyon/refs/goudenregen-bottle.png" alt="Goudenregen parfum">
+    <div class="info"><div class="name">Goudenregen — Lente</div><div class="meta">2K · 1:1 · PNG</div></div>
+  </a>
+  <a href="file:///Users/yellehwerker/my-ai-workspace/demos/claude-design/halcyon/refs/oker-bottle.png" class="asset-card" target="_blank">
+    <img src="file:///Users/yellehwerker/my-ai-workspace/demos/claude-design/halcyon/refs/oker-bottle.png" alt="Oker parfum">
+    <div class="info"><div class="name">Oker — Zomer</div><div class="meta">2K · 1:1 · PNG</div></div>
+  </a>
+  <a href="file:///Users/yellehwerker/my-ai-workspace/demos/claude-design/halcyon/refs/atelier/workbench.png" class="asset-card" target="_blank">
+    <img src="file:///Users/yellehwerker/my-ai-workspace/demos/claude-design/halcyon/refs/atelier/workbench.png" alt="Atelier workbench">
+    <div class="info"><div class="name">Atelier Workbench</div><div class="meta">2K · 4:3 · PNG</div></div>
+  </a>
+  <a href="file:///Users/yellehwerker/my-ai-workspace/demos/claude-design/halcyon/refs/atelier/perfumer-hands.png" class="asset-card" target="_blank">
+    <img src="file:///Users/yellehwerker/my-ai-workspace/demos/claude-design/halcyon/refs/atelier/perfumer-hands.png" alt="Perfumer hands">
+    <div class="info"><div class="name">Perfumer Hands</div><div class="meta">2K · 3:2 · PNG</div></div>
+  </a>
+  <a href="file:///Users/yellehwerker/my-ai-workspace/demos/claude-design/halcyon/refs/atelier/amsterdam-winter.png" class="asset-card" target="_blank">
+    <img src="file:///Users/yellehwerker/my-ai-workspace/demos/claude-design/halcyon/refs/atelier/amsterdam-winter.png" alt="Amsterdam winter">
+    <div class="info"><div class="name">Amsterdam Winter</div><div class="meta">2K · 16:9 · PNG</div></div>
+  </a>
+  <a href="file:///Users/yellehwerker/my-ai-workspace/demos/claude-design/halcyon/refs/halcyon-logo.svg" class="asset-card" target="_blank">
+    <img src="file:///Users/yellehwerker/my-ai-workspace/demos/claude-design/halcyon/refs/halcyon-logo.svg" alt="Halcyon logo" style="object-fit: contain; background: #F5F0E6;">
+    <div class="info"><div class="name">Halcyon Wordmark</div><div class="meta">SVG · 800x200</div></div>
+  </a>
+  <a href="file:///Users/yellehwerker/my-ai-workspace/demos/claude-design/halcyon/refs/hero-drop-still.png" class="asset-card" target="_blank">
+    <img src="file:///Users/yellehwerker/my-ai-workspace/demos/claude-design/halcyon/refs/hero-drop-still.png" alt="Hero drop still (L5)">
+    <div class="info"><div class="name">🎬 Hero Drop Still (L5)</div><div class="meta">2K · 16:9 · Split composition voor Seedance</div></div>
+  </a>
+</div>
+
+<div class="grid-cards" style="margin-top: 1rem;">
+  <a href="file:///Users/yellehwerker/my-ai-workspace/demos/claude-design/halcyon/design.md" class="card"><span class="icon">📋</span><div class="title">Halcyon design.md</div><div class="desc">Volledig brand system — kleuren, typography, animation, voice.</div><div class="path">halcyon/design.md</div></a>
+  <a href="file:///Users/yellehwerker/my-ai-workspace/demos/claude-design/halcyon/CLAUDE.md" class="card"><span class="icon">⚙️</span><div class="title">Halcyon CLAUDE.md</div><div class="desc">NextJS webapp blueprint met Halcyon-specific tokens.</div><div class="path">halcyon/CLAUDE.md</div></a>
+  <a href="file:///Users/yellehwerker/my-ai-workspace/demos/claude-design/halcyon/prompts.md" class="card"><span class="icon">✨</span><div class="title">4 Mega Alpha Prompts</div><div class="desc">Homepage, product, mobile quiz, investor deck — kant-en-klaar te paste.</div><div class="path">halcyon/prompts.md</div></a>
+  <a href="file:///Users/yellehwerker/my-ai-workspace/demos/claude-design/halcyon/brand-story.md" class="card"><span class="icon">📖</span><div class="title">Brand Story</div><div class="desc">Origin, filosofie, 4 parfums breakdown, voice examples.</div><div class="path">halcyon/brand-story.md</div></a>
+  <a href="file:///Users/yellehwerker/my-ai-workspace/demos/claude-design/halcyon/refs/aesop-style-design-md.md" class="card"><span class="icon">📜</span><div class="title">Aesop-style Reference</div><div class="desc">Voor Les 1 getdesign.md demo (Aesop niet beschikbaar op site, dit is illustratief alternative).</div><div class="path">halcyon/refs/aesop-style-design-md.md</div></a>
+  <a href="file:///Users/yellehwerker/my-ai-workspace/demos/claude-design/halcyon/hero-video-workflow.md" class="card primary"><span class="icon">🎬</span><div class="title">Halcyon Hero Video Workflow</div><div class="desc">Brand-specifieke 6-beat workflow voor Les 5 demo — exacte prompts + specs + checklist.</div><div class="path">halcyon/hero-video-workflow.md</div></a>
+</div>
+
+
+<!-- VELOCITY DEMO -->
+<div class="section-head">
+  <h2>🚀 Velocity Studio Demo</h2>
+  <span class="count">For L6 agency demo + victory lap case studies</span>
+</div>
+<div class="asset-grid">
+  <a href="file:///Users/yellehwerker/my-ai-workspace/demos/claude-design/velocity-studio/case-studies/bakker-site.png" class="asset-card" target="_blank">
+    <img src="file:///Users/yellehwerker/my-ai-workspace/demos/claude-design/velocity-studio/case-studies/bakker-site.png" alt="Bakker case study">
+    <div class="info"><div class="name">Lokale Bakker · €2.500</div><div class="meta">2K · 16:9 · Case 1</div></div>
+  </a>
+  <a href="file:///Users/yellehwerker/my-ai-workspace/demos/claude-design/velocity-studio/case-studies/coach-site.png" class="asset-card" target="_blank">
+    <img src="file:///Users/yellehwerker/my-ai-workspace/demos/claude-design/velocity-studio/case-studies/coach-site.png" alt="Coach case study">
+    <div class="info"><div class="name">Coach Page · €4.000</div><div class="meta">2K · 16:9 · Case 2</div></div>
+  </a>
+  <a href="file:///Users/yellehwerker/my-ai-workspace/demos/claude-design/velocity-studio/case-studies/saas-site.png" class="asset-card" target="_blank">
+    <img src="file:///Users/yellehwerker/my-ai-workspace/demos/claude-design/velocity-studio/case-studies/saas-site.png" alt="SaaS case study">
+    <div class="info"><div class="name">SaaS Onboarding · €7.500</div><div class="meta">2K · 16:9 · Case 3</div></div>
+  </a>
+  <a href="file:///Users/yellehwerker/my-ai-workspace/demos/claude-design/velocity-studio/refs/velocity-logo.svg" class="asset-card" target="_blank">
+    <img src="file:///Users/yellehwerker/my-ai-workspace/demos/claude-design/velocity-studio/refs/velocity-logo.svg" alt="Velocity logo" style="object-fit: contain; background: #0A0A0B;">
+    <div class="info"><div class="name">Velocity Wordmark</div><div class="meta">SVG · 800x200</div></div>
+  </a>
+</div>
+
+<div class="grid-cards" style="margin-top: 1rem;">
+  <a href="file:///Users/yellehwerker/my-ai-workspace/demos/claude-design/velocity-studio/design.md" class="card"><span class="icon">📋</span><div class="title">Velocity design.md</div><div class="desc">Acid green + near black tech agency brand system.</div><div class="path">velocity-studio/design.md</div></a>
+  <a href="file:///Users/yellehwerker/my-ai-workspace/demos/claude-design/velocity-studio/CLAUDE.md" class="card"><span class="icon">⚙️</span><div class="title">Velocity CLAUDE.md</div><div class="desc">NextJS webapp blueprint voor agency site.</div><div class="path">velocity-studio/CLAUDE.md</div></a>
+  <a href="file:///Users/yellehwerker/my-ai-workspace/demos/claude-design/velocity-studio/agency-onboarding.md" class="card"><span class="icon">🔁</span><div class="title">Agency Onboarding</div><div class="desc">Volledige lead-to-delivery flow met email templates.</div><div class="path">velocity-studio/agency-onboarding.md</div></a>
+  <a href="file:///Users/yellehwerker/my-ai-workspace/demos/claude-design/velocity-studio/pricing-tiers.md" class="card"><span class="icon">💰</span><div class="title">Pricing Tiers</div><div class="desc">3 packages breakdown met FAQ.</div><div class="path">velocity-studio/pricing-tiers.md</div></a>
+  <a href="file:///Users/yellehwerker/my-ai-workspace/demos/claude-design/velocity-studio/mega-prompt-command-center.md" class="card primary"><span class="icon">🎯</span><div class="title">Command Center Prompts</div><div class="desc">3 mega prompts voor Les 6 live demo — site + mobile + deck.</div><div class="path">velocity-studio/mega-prompt-command-center.md</div></a>
+</div>
+
+
+<!-- SKILLS -->
+<div class="section-head">
+  <h2>⚙️ Production Skills</h2>
+  <span class="count">3 skills · in ~/.claude/commands/</span>
+</div>
+<div class="grid-cards">
+  <a href="file:///Users/yellehwerker/.claude/commands/build-page.md" class="card primary"><span class="icon">🏗️</span><div class="title">/build-page</div><div class="desc">Claude Design export → NextJS + GSAP site scaffold. Legacy HTML mode als fallback.</div><div class="path">~/.claude/commands/build-page.md</div></a>
+  <a href="file:///Users/yellehwerker/.claude/commands/deploy-site.md" class="card primary"><span class="icon">🚀</span><div class="title">/deploy-site</div><div class="desc">Git init → GitHub → Vercel production deploy in één flow.</div><div class="path">~/.claude/commands/deploy-site.md</div></a>
+  <a href="file:///Users/yellehwerker/.claude/commands/design-command-center.md" class="card primary"><span class="icon">🎯</span><div class="title">/design-command-center</div><div class="desc">Full orchestrator. design.md → 3 Claude Design prompts → build → deploy = 30 min.</div><div class="path">~/.claude/commands/design-command-center.md</div></a>
+</div>
+
+
+<!-- GIFTS -->
+<div class="section-head">
+  <h2>🎁 Gifts (12 files)</h2>
+  <span class="count">In ~/.Lio_The_Ai_Operator/gifts/ · v2 uitgebreid</span>
+</div>
+<div class="grid-cards">
+  <a href="file:///Users/yellehwerker/.Lio_The_Ai_Operator/gifts/design-md-template.md" class="card"><span class="icon">🎁</span><div class="title">L1 · design.md Template</div><div class="desc">Kant-en-klaar om in elk project te droppen.</div><div class="path">gifts/design-md-template.md</div></a>
+  <a href="file:///Users/yellehwerker/.Lio_The_Ai_Operator/gifts/design-import-methods.md" class="card"><span class="icon">🎁</span><div class="title">L1 · Import Methods (v2)</div><div class="desc">4 manieren (interview/getdesign/codebase/native Design Systems) + definitieve vergelijking.</div><div class="path">gifts/design-import-methods.md</div></a>
+  <a href="file:///Users/yellehwerker/.Lio_The_Ai_Operator/gifts/claude-design-prompt-pack.md" class="card"><span class="icon">🎁</span><div class="title">L2 · Prompt Pack (v2)</div><div class="desc">10 mega prompts + 3 pro patterns (Plan Mode + Opus 4.7 + Variants→Tweaks workflow).</div><div class="path">gifts/claude-design-prompt-pack.md</div></a>
+  <a href="file:///Users/yellehwerker/.Lio_The_Ai_Operator/gifts/claude-design-token-economics.md" class="card primary"><span class="icon">💰</span><div class="title">Bonus · Token Economics</div><div class="desc">Cost-per-action tabel + quota-sparing regels + daily check. Bespaart letterlijk geld.</div><div class="path">gifts/claude-design-token-economics.md (NIEUW)</div></a>
+  <a href="file:///Users/yellehwerker/.Lio_The_Ai_Operator/gifts/dribbble-reference-library.md" class="card"><span class="icon">🎁</span><div class="title">L3 · Dribbble Reference Library</div><div class="desc">Per site-type waar te zoeken voor layout inspiration.</div><div class="path">gifts/dribbble-reference-library.md</div></a>
+  <a href="file:///Users/yellehwerker/.Lio_The_Ai_Operator/gifts/multi-page-mega-prompts.md" class="card"><span class="icon">🎁</span><div class="title">L3 · Multi-Page Prompts</div><div class="desc">5 complete site-architectuur prompts.</div><div class="path">gifts/multi-page-mega-prompts.md</div></a>
+  <a href="file:///Users/yellehwerker/.Lio_The_Ai_Operator/gifts/mobile-app-template.md" class="card"><span class="icon">🎁</span><div class="title">L4 · Mobile App Templates</div><div class="desc">6 prototype types (consumer, productivity, wellness, ecom, dating, fintech).</div><div class="path">gifts/mobile-app-template.md</div></a>
+  <a href="file:///Users/yellehwerker/.Lio_The_Ai_Operator/gifts/pitch-deck-template.md" class="card"><span class="icon">🎁</span><div class="title">L4 · Pitch Deck Templates</div><div class="desc">4 deck types (investor, sales, workshop, agency).</div><div class="path">gifts/pitch-deck-template.md</div></a>
+  <a href="file:///Users/yellehwerker/.Lio_The_Ai_Operator/gifts/hero-video-prompt-pack.md" class="card primary"><span class="icon">🎬</span><div class="title">L5 · Hero Video Prompt Pack (NIEUW)</div><div class="desc">5 Nano Banana composition prompts + 10 Seedance motion prompts + complete Halcyon walkthrough.</div><div class="path">gifts/hero-video-prompt-pack.md</div></a>
+  <a href="file:///Users/yellehwerker/.Lio_The_Ai_Operator/gifts/claude-md-webapp-blueprint.md" class="card"><span class="icon">🎁</span><div class="title">L6 · CLAUDE.md Webapp Blueprint</div><div class="desc">NextJS + GSAP + Vercel blueprint voor elk project.</div><div class="path">gifts/claude-md-webapp-blueprint.md</div></a>
+  <a href="file:///Users/yellehwerker/.Lio_The_Ai_Operator/gifts/gsap-prompt-library.md" class="card"><span class="icon">🎁</span><div class="title">L6 · GSAP Prompt Library</div><div class="desc">20+ production-ready animation patterns.</div><div class="path">gifts/gsap-prompt-library.md</div></a>
+  <a href="file:///Users/yellehwerker/.Lio_The_Ai_Operator/gifts/agency-onboarding-template.md" class="card"><span class="icon">🎁</span><div class="title">L7 · Agency Onboarding</div><div class="desc">Complete flow — lead capture tot delivery.</div><div class="path">gifts/agency-onboarding-template.md</div></a>
+</div>
+
+
+<!-- LAUNCH CONTENT -->
+<div class="section-head">
+  <h2>📱 Launch Content (Post-Opname)</h2>
+  <span class="count">6 files · voor Launch Day + follow-ups</span>
+</div>
+<div class="grid-cards">
+  <a href="file:///Users/yellehwerker/my-ai-workspace/brands/liogpt/launch/claude-design-cursus/youtube-metadata.md" class="card"><span class="icon">🎥</span><div class="title">YouTube Metadata</div><div class="desc">7 titels, 7 descriptions met timestamps, SEO keywords, thumbnail text.</div><div class="path">launch/youtube-metadata.md</div></a>
+  <a href="file:///Users/yellehwerker/my-ai-workspace/brands/liogpt/launch/claude-design-cursus/instagram-carousel.md" class="card"><span class="icon">📸</span><div class="title">Instagram Carousel</div><div class="desc">10 slides copy + caption + hashtags + reel variant.</div><div class="path">launch/instagram-carousel.md</div></a>
+  <a href="file:///Users/yellehwerker/my-ai-workspace/brands/liogpt/launch/claude-design-cursus/email-announcement.md" class="card"><span class="icon">📧</span><div class="title">Email Announcement</div><div class="desc">4 subject line opties + body + follow-up + automation flow.</div><div class="path">launch/email-announcement.md</div></a>
+  <a href="file:///Users/yellehwerker/my-ai-workspace/brands/liogpt/launch/claude-design-cursus/twitter-thread.md" class="card"><span class="icon">🐦</span><div class="title">Twitter/X Thread</div><div class="desc">10-tweet thread + LinkedIn variant + engagement moves.</div><div class="path">launch/twitter-thread.md</div></a>
+  <a href="file:///Users/yellehwerker/my-ai-workspace/brands/liogpt/launch/claude-design-cursus/telegram-message.md" class="card"><span class="icon">💬</span><div class="title">Telegram Messages</div><div class="desc">4 bericht-versies voor verschillende audiences.</div><div class="path">launch/telegram-message.md</div></a>
+  <a href="file:///Users/yellehwerker/my-ai-workspace/brands/liogpt/launch/claude-design-cursus/thumbnail-briefs.md" class="card"><span class="icon">🎨</span><div class="title">Thumbnail Briefs</div><div class="desc">Figma template spec + 7 per-lesson briefs + color codes.</div><div class="path">launch/thumbnail-briefs.md</div></a>
+</div>
+
+
+<!-- OPNAME SUPPORT -->
+<div class="section-head">
+  <h2>🎬 Opname Support Files</h2>
+  <span class="count">Tijdens de opname zelf</span>
+</div>
+<div class="grid-cards">
+  <a href="snippets/raycast-snippets.md" class="card primary"><span class="icon">⌘</span><div class="title">Raycast Snippets Library</div><div class="desc">Alle prompts met <code>:cd-*</code> triggers. Import in Raycast of Alfred voor quick-paste tijdens demos.</div><div class="path">snippets/raycast-snippets.md</div></a>
+  <a href="pre-opname-checklist.html" class="card critical"><span class="icon">✈️</span><div class="title">Pre-Opname Checklist</div><div class="desc">Print in A4 + tape op muur. Stap-voor-stap alle systeemchecks.</div><div class="path">pre-opname-checklist.html</div></a>
+</div>
+
+
+<!-- WHAT'S DONE -->
+<div class="checklist" style="margin-top: 3rem;">
+  <h3>✓ Wat is AF (v2)</h3>
+  <ul>
+    <li>3 production skills (/build-page, /deploy-site, /design-command-center)</li>
+    <li>2 brand system templates (design.md, CLAUDE-webapp.md)</li>
+    <li><strong>12 gifts</strong> (L1-L7 + bonus Token Economics + NIEUW Hero Video Prompt Pack)</li>
+    <li>Halcyon brand (design.md, CLAUDE.md, prompts, brand-story, 8 AI-images inc. hero-drop-still, 2 SVG logos, hero-video-workflow)</li>
+    <li>Velocity brand (design.md, CLAUDE.md, onboarding, pricing, 3 case studies, logo)</li>
+    <li><strong>9 production scripts</strong> (.md met shot lists) — inc. NEW Les 5 Hero Video</li>
+    <li><strong>9 teleprompter scripts</strong> (.txt clean speech) — inc. NEW Les 5</li>
+    <li>Read-through HTML (v2 — 74 min, 7 lessen)</li>
+    <li>Todo-dinsdag HTML (35+ tasks met localStorage)</li>
+    <li>Pre-opname checklist HTML (A4 printable)</li>
+    <li>6 launch content pieces (YouTube, IG, email, Twitter, Telegram, thumbnails)</li>
+    <li>Raycast/Alfred snippets library (20+ prompts)</li>
+    <li>Aesop-style design.md reference (voor Les 1 demo fallback)</li>
+  </ul>
+</div>
+
+
+<!-- WHAT LEON STILL NEEDS TO DO -->
+<div class="tip" style="margin-top: 2rem;">
+  <div class="tip-label">Wat alleen JIJ kunt doen (vandaag + morgen)</div>
+  <strong>Vandaag (dinsdag) — dry-runs die ik niet kan doen:</strong><br>
+  • <code>/design-command-center</code> end-to-end testen (auth-required)<br>
+  • <code>/build-page</code> + <code>/deploy-site</code> live testen op Halcyon<br>
+  • Halcyon en Velocity pre-deploy naar Vercel als backup URLs<br>
+  • <strong>🎬 NIEUW — Les 5 prep:</strong> Higgsfield login, Nano Banana Pro credits, Seedance 2.0 credits (~$10)<br>
+  • <strong>🎬 Seedance backup clip pre-genereren</strong> voor Halcyon (druppel animation) — ~5 min<br>
+  • <strong>🎬 MP4 swap dry-run</strong> in Claude Design met dummy project<br>
+  • Screen-record Claude Design builds als backup video<br>
+  • Dribbble screenshots selecteren + downloaden in <code>halcyon/refs/</code><br>
+  <br>
+  <strong>Morgen (woensdag) — shoot-day:</strong><br>
+  • 09:00 final dry-run Les 5<br>
+  • 10:00 test-take → start opname<br>
+  • Gebruik <a href="pre-opname-checklist.html" style="color: var(--accent);">pre-opname-checklist.html</a>
+</div>
+
+
+<footer>
+  Mission Control · Claude Design Cursus · Lio The AI Operator<br>
+  Laatste update: 21 april 2026 · Shoot-day: 22 april 2026
+</footer>
+
+</div>
+
+</body>
+</html>
